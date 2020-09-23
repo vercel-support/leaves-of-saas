@@ -1,0 +1,12 @@
+type Query {
+  goodRead: GoodRead
+}
+
+type GoodRead {
+  id: Int
+  title: String
+  author: String
+  imageUrl: String
+  averageRating: Float
+  publicationDate: Time
+}

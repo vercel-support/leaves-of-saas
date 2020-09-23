@@ -1,0 +1,144 @@
+enum Partner {
+  GOODREADS
+}
+enum NudgeDirection {
+  UP
+  DOWN
+}
+
+type Query {
+  books: [Book!]!
+  posts: [Post!]!
+}
+
+type Book {
+  id: ID!
+  name: String!
+  author: String!
+  imageUrl: String!
+  publicationDate: Date
+  partner: Partner
+  partnerId: String
+}
+
+type Post {
+  id: ID!
+  nudges: [Nudge!]!
+  user: User!
+  text: String!
+  date: Time!
+  replies: [Post!]
+  reading: Reading
+  group: Group!
+  link: Link
+}
+
+type User {
+  id: ID!
+  givenName: String!
+  familyName: String!
+  emailAddress: String!
+  posts: [Post!]!
+  groups: [Group!]!
+  nominations: [Nomination!]!
+  nudges: [Nudge!]!
+  refreshTokens: [RefreshToken!]!
+  roles: [Role!]!
+}
+
+type Nudge {
+  id: ID!
+  user: User
+  direction: NudgeDirection!
+  post: Post
+  meeting: Meeting
+  group: Group
+}
+
+type MeetingResponse {
+  id: ID!
+  user: User
+  isAttending: Boolean
+  meeting: Meeting
+}
+
+type Meeting {
+  id: ID!
+  startDateTime: Time!
+  endDateTime: Time!
+  description: String!
+  addressLine1: String
+  addressLine2: String
+  city: String
+  state: String
+  group: Group!
+  attendance: [MeetingResponse!]!
+  readings: [Reading!]!
+}
+
+type Reading {
+  id: ID!
+  position: Int
+  nomimation: Nomination!
+  posts: [Post!]!
+  votes: [Vote!]!
+  meeting: Meeting!
+}
+
+type RefreshToken {
+  user: User!
+  expirationDate: Time!
+  token: String!
+}
+
+type Election {
+  id: ID!
+  group: Group!
+  nominations: [Nomination!]!
+  startDateTime: Time
+  endDateTime: Time
+}
+
+type Vote {
+  id: ID!
+  user: User!
+  value: Int
+  nomination: Nomination
+  reading: Reading
+}
+
+type Nomination {
+  id: ID!
+  pitchedBy: User!
+  date: Time!
+  book: Book!
+  votes: [Vote!]!
+  group: Group!
+  election: Election!
+  reading: Reading
+}
+
+type Group {
+  id: ID!
+  name: String!
+  users: [User!]!
+  nominations: [Nomination!]!
+  elections: [Election!]!
+  isInPublicDirectory: Boolean
+}
+
+type Link {
+  description: String
+  image: String
+  title: String
+  url: String!
+  type: String
+  siteName: String
+}
+
+type Role {
+  id: ID!
+  name: String!
+  users: [User!]!
+  group: Group
+}

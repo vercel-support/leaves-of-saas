@@ -1,2 +1,1 @@
-# leaves-of-saas
-application called leaves of saas
+This is a starter template for [Learn Next.js](https://nextjs.org/learn).
