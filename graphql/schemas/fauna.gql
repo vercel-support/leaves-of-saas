@@ -7,12 +7,15 @@ enum NudgeDirection {
 }
 
 type Query {
-  books: [Book!]!
-  posts: [Post!]!
+  medias: [Media!]
+  posts: [Post!]
+  groups: [Group!]
+  users: [User!]
+  findUserByEmail(emailAddress: String!): User
+  findGroupByName(name: String!, isInPublicDirectory: Boolean!): [Group!]
 }
 
-type Book {
-  id: ID!
+type Media {
   name: String!
   author: String!
   imageUrl: String!
@@ -22,8 +25,7 @@ type Book {
 }
 
 type Post {
-  id: ID!
-  nudges: [Nudge!]!
+  nudges: [Nudge!]
   user: User!
   text: String!
   date: Time!
@@ -34,36 +36,32 @@ type Post {
 }
 
 type User {
-  id: ID!
   givenName: String!
   familyName: String!
-  emailAddress: String!
-  posts: [Post!]!
-  groups: [Group!]!
-  nominations: [Nomination!]!
-  nudges: [Nudge!]!
-  refreshTokens: [RefreshToken!]!
-  roles: [Role!]!
+  emailAddress: String! @unique
+  posts: [Post!]
+  groups: [Group!]
+  nominations: [Nomination!]
+  nudges: [Nudge!]
+  refreshTokens: [RefreshToken!] @relation
+  roles: [Role!]
 }
 
 type Nudge {
-  id: ID!
-  user: User
+  user: User!
   direction: NudgeDirection!
   post: Post
   meeting: Meeting
-  group: Group
+  group: Group!
 }
 
 type MeetingResponse {
-  id: ID!
-  user: User
+  user: User!
   isAttending: Boolean
-  meeting: Meeting
+  meeting: Meeting!
 }
 
 type Meeting {
-  id: ID!
   startDateTime: Time!
   endDateTime: Time!
   description: String!
@@ -72,35 +70,32 @@ type Meeting {
   city: String
   state: String
   group: Group!
-  attendance: [MeetingResponse!]!
-  readings: [Reading!]!
+  attendance: [MeetingResponse!]
+  readings: [Reading!]
 }
 
 type Reading {
-  id: ID!
   position: Int
   nomimation: Nomination!
-  posts: [Post!]!
-  votes: [Vote!]!
+  posts: [Post!]
+  votes: [Vote!]
   meeting: Meeting!
 }
 
 type RefreshToken {
-  user: User!
+  user: User! @relation
   expirationDate: Time!
   token: String!
 }
 
 type Election {
-  id: ID!
   group: Group!
-  nominations: [Nomination!]!
+  nominations: [Nomination!]
   startDateTime: Time
   endDateTime: Time
 }
 
 type Vote {
-  id: ID!
   user: User!
   value: Int
   nomination: Nomination
@@ -108,26 +103,25 @@ type Vote {
 }
 
 type Nomination {
-  id: ID!
   pitchedBy: User!
   date: Time!
-  book: Book!
-  votes: [Vote!]!
+  media: Media!
+  votes: [Vote!]
   group: Group!
   election: Election!
   reading: Reading
 }
 
 type Group {
-  id: ID!
-  name: String!
-  users: [User!]!
-  nominations: [Nomination!]!
-  elections: [Election!]!
-  isInPublicDirectory: Boolean
+  name: String! @unique
+  users: [User!]
+  nominations: [Nomination!]
+  elections: [Election!]
+  isInPublicDirectory: Boolean!
 }
 
 type Link {
+  post: Post!
   description: String
   image: String
   title: String
@@ -137,8 +131,7 @@ type Link {
 }
 
 type Role {
-  id: ID!
-  name: String!
-  users: [User!]!
+  name: String! @unique
+  users: [User!]
   group: Group
 }
