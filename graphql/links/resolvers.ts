@@ -104,7 +104,6 @@ const getLinkByUrl = async (
   context
 ): Promise<ILinkQueryResult> => {
   const { error, result } = await ogs({ url });
-  console.log(result);
   return {
     url: result.ogUrl,
     description: result.ogDescription,

@@ -57,8 +57,6 @@ const findUserByEmail = async (
     `,
     variables: { emailAddress },
   });
-  console.log(response.data.findUserByEmail);
-
   return response.data.findUserByEmail;
 };
 

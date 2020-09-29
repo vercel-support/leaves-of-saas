@@ -27,8 +27,6 @@ const getAllGroups = async (parent, args, context): Promise<IGroupResponse> => {
       }
     `,
   });
-  console.log(response.data);
-
   return response.data.groups;
 };
 

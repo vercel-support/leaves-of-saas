@@ -50,9 +50,6 @@ const createRefreshToken = async (
     .toISOString();
   // .format('YYYY-MM-DDTHH:mm:ss.SSSZ');
   const token = generate(36);
-
-  console.log(expirationDate, process.env.JWT_TIMEOUT_MINUTES);
-
   const { data } = await client.mutate<ICreateRefreshTokenResponse>({
     mutation: gql`
       mutation Mutation($data: RefreshTokenInput!) {
