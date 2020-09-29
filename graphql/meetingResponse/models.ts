@@ -1,7 +1,9 @@
+import { IMeeting } from 'graphql/meeting';
 import { IPagedResponse } from 'graphql/models';
+import { IUser } from 'graphql/users';
 
 // incoming from fauna db
-export interface IFaunaMeetingResponsePagedResponse {
+export interface IMeetingResponsePagedResponse {
   meetingresponses: IMeetingResponseResponse;
 }
 
@@ -32,11 +34,15 @@ export interface IMeetingResponseResponse {
   };
 }
 
-export interface IMeetingResponse extends IMeetingResponseInput {
+export interface IMeetingResponse {
   _id: string;
+  user: IUser;
+  isAttending: boolean;
+  meeting: IMeeting;
 }
 
 export interface IMeetingResponseInput {
-  name: string;
-  isInPublicDirectory: boolean;
+  user: string;
+  isAttending: boolean;
+  meeting: string;
 }

@@ -4,77 +4,21 @@ import client from 'graphql/client';
 import {
   ICreateMeetingResponseResponse,
   IDeleteMeetingResponseResponse,
-  IFaunaMeetingResponsePagedResponse,
   IFindMeetingResponseByIdResponse,
-  IFindMeetingResponsesByNamePagedResponse,
   IMeetingResponseInput,
-  IMeetingResponseResponse,
   IUpdateMeetingResponseResponse,
   IMeetingResponse,
 } from './models';
-
-const getAllMeetingResponses = async (
-  parent,
-  args,
-  context
-): Promise<IMeetingResponseResponse> => {
-  const response = await client.query<IFaunaMeetingResponsePagedResponse>({
-    query: gql`
-      query {
-        meetingresponses {
-          data {
-            _id
-            name
-            isInPublicDirectory
-          }
-        }
-      }
-    `,
-  });
-  console.log(response.data);
-
-  return response.data.meetingresponses;
-};
 
 interface IFindMeetingResponsesByNameArgs {
   name: string;
 }
 
-const findMeetingResponsesByName = async (
-  parent,
-  { name }: IFindMeetingResponsesByNameArgs,
-  context
-): Promise<IMeetingResponseResponse> => {
-  const response = await client.query<IFindMeetingResponsesByNamePagedResponse>(
-    {
-      query: gql`
-        query Query($name: String!, $isInPublicDirectory: Boolean!) {
-          findMeetingResponseByName(
-            name: $name
-            isInPublicDirectory: $isInPublicDirectory
-          ) {
-            data {
-              _id
-              name
-              isInPublicDirectory
-            }
-            before
-            after
-          }
-        }
-      `,
-      variables: { isInPublicDirectory: true, name },
-    }
-  );
-
-  return response.data.findMeetingResponseByName;
-};
-
 interface IFindMeetingResponseByIdArgs {
   id: string;
 }
 
-const findMeetingResponsesById = async (
+const findMeetingResponseById = async (
   parent,
   { id }: IFindMeetingResponseByIdArgs,
   context
@@ -84,8 +28,17 @@ const findMeetingResponsesById = async (
       query Query($id: ID!) {
         findMeetingResponseByID(id: $id) {
           _id
-          name
-          isInPublicDirectory
+          user {
+            _id
+            familyName
+            givenName
+            emailAddress
+          }
+          isAttending
+          meeting {
+            _id
+            description
+          }
         }
       }
     `,
@@ -133,7 +86,17 @@ const createMeetingResponse = async (
         }
       }
     `,
-    variables: { data },
+    variables: {
+      data: {
+        ...data,
+        user: {
+          connect: data.user,
+        },
+        meeting: {
+          connect: data.meeting,
+        },
+      },
+    },
   });
 
   return response.data.createMeetingResponse;
@@ -162,11 +125,9 @@ const deleteMeetingResponse = async (
   return response.data.deleteMeetingResponse;
 };
 
-const meetingresponseResolvers: IResolvers<any, any> = {
+const meetingResponseResolvers: IResolvers<any, any> = {
   Query: {
-    findMeetingResponsesByName,
-    findMeetingResponsesById,
-    getAllMeetingResponses,
+    findMeetingResponseById,
   },
   Mutation: {
     updateMeetingResponse,
@@ -175,4 +136,4 @@ const meetingresponseResolvers: IResolvers<any, any> = {
   },
 };
 
-export { meetingresponseResolvers };
+export { meetingResponseResolvers };

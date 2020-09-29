@@ -1,6 +1,6 @@
-import { meetingresponseResolvers } from './resolvers';
+import { meetingResponseResolvers } from './resolvers';
 import { IMeetingResponseResponse, IMeetingResponse } from './models';
-import { meetingresponseTypeDefs } from './types';
+import { meetingResponseTypeDefs } from './types';
 
-export { meetingresponseResolvers, meetingresponseTypeDefs };
+export { meetingResponseResolvers, meetingResponseTypeDefs };
 export type { IMeetingResponse, IMeetingResponseResponse };

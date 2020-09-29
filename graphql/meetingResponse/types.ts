@@ -3,7 +3,6 @@ import { DocumentNode } from 'graphql';
 
 const meetingResponseTypeDefs: DocumentNode = gql`
   type Query {
-    getAllMeetingResponses: MeetingResponsePagedResponse
     findMeetingResponseById(id: ID!): MeetingResponse
   }
 
