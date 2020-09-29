@@ -58,7 +58,7 @@ type Nudge {
 type MeetingResponse {
   user: User!
   isAttending: Boolean
-  meeting: Meeting!
+  meeting: Meeting! @relation
 }
 
 type Meeting {
@@ -70,7 +70,7 @@ type Meeting {
   city: String
   state: String
   group: Group!
-  attendance: [MeetingResponse!]
+  attendance: [MeetingResponse!] @relation
   readings: [Reading!]
 }
 

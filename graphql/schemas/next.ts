@@ -11,9 +11,16 @@ import {
   refreshTokenTypeDefs,
 } from 'graphql/refreshTokens';
 import { mediaResolvers, mediaTypeDefs } from 'graphql/media';
+import { meetingResolvers, meetingTypeDefs } from 'graphql/meeting';
+import {
+  meetingResponseResolvers,
+  meetingResponseTypeDefs,
+} from 'graphql/meetingResponse';
+import { electionResolvers, electionTypeDefs } from 'graphql/election';
 
 const commonTypeDefs: DocumentNode = gql`
   scalar Time
+  scalar Date
 
   type CreateUpdateDelete {
     _id: ID!
@@ -41,6 +48,9 @@ const typeDefs = mergeTypeDefs([
   refreshTokenTypeDefs,
   goodReadsTypeDefs,
   mediaTypeDefs,
+  meetingTypeDefs,
+  meetingResponseTypeDefs,
+  electionTypeDefs,
 ]);
 const resolvers = mergeResolvers([
   groupResolvers,
@@ -50,6 +60,9 @@ const resolvers = mergeResolvers([
   userResolvers,
   refreshTokenResolvers,
   mediaResolvers,
+  meetingResolvers,
+  meetingResponseResolvers,
+  electionResolvers,
 ]);
 
 export { typeDefs, resolvers };
