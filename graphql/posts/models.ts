@@ -1,6 +1,11 @@
-import { Dayjs } from 'dayjs';
-import { IPagedResponse } from 'graphql/models';
+import dayjs, { Dayjs } from 'dayjs';
+import { ID, IPagedResponse } from 'graphql/models';
 import { IGroup } from 'graphql/groups';
+import { ILink } from 'graphql/links';
+import { INudge } from 'graphql/nudge';
+import { IUser } from 'graphql/users';
+import { ILinkInput } from 'graphql/links/models';
+import { faunaNudgeToNudge, IFaunaNudge } from 'graphql/nudge/models';
 
 // incoming from fauna db
 export interface IPostPagedResponse {
@@ -15,10 +20,6 @@ export interface ICreatePostResponse {
   createPost: IPost;
 }
 
-export interface IFindPostByIdResponse {
-  findPostByID: IPost;
-}
-
 export interface IDeletePostResponse {
   deletePost: IPost;
 }
@@ -28,10 +29,6 @@ export interface IPostResponse {
   data: {
     posts: IPagedResponse<IPost>;
   };
-}
-
-export interface IPost extends IPostInput {
-  _id: string;
 }
 
 export interface IPostUserRelation {
@@ -51,18 +48,78 @@ export interface IPostReadingRelation {
 }
 
 export interface IPostLinkRelation {
-  create?: any;
-  connect?: string;
-  disconnect?: boolean;
+  create?: ILinkInput;
+}
+
+export interface IPost {
+  _id?: string;
+  reading?: ID;
+  text?: string;
+  date?: Dayjs;
+  link?: ILink;
+  replies?: IPost[]; // this is an array of ids
+  nudges?: INudge[]; //
+  group?: ID;
+  user?: IUser;
 }
 
 export interface IPostInput {
-  reading?: IPostReadingRelation;
+  reading?: ID;
   text: string;
   date: Dayjs;
   link?: IPostLinkRelation;
-  replies?: string[]; // this is an array of ids
-  nudges?: string[]; //
-  group: IPostGroupRelation;
-  user: IPostUserRelation;
+  group: ID;
+  user: ID;
+  replyTo?: ID;
 }
+
+export interface IFaunaPostInput {
+  reading?: { connect: ID };
+  text: string;
+  date: string;
+  link?: IPostLinkRelation;
+  group: { connect: ID };
+  user: { connect: ID };
+  replyTo?: { create: { reply: { connect: ID } } };
+}
+
+export interface IFaunaPost {
+  _id: ID;
+  text: string;
+  date: string;
+  link?: ILink;
+  replies: { data: { reply: IFaunaPost }[] };
+  nudges: { data: IFaunaNudge[] };
+  user: IUser;
+  reading?: any;
+  group: IGroup;
+}
+
+export interface IFindPostByIdResponse {
+  findPostByID: IFaunaPost;
+}
+
+export const faunaPostToPost = (faunaPost: IFaunaPost): IPost => ({
+  ...faunaPost,
+  date: dayjs(faunaPost.date),
+  replies: faunaPost.replies.data.map((fp: { reply: IFaunaPost }) =>
+    faunaPostToPost(fp.reply)
+  ),
+  reading: faunaPost.reading?._id,
+  nudges: faunaPost.nudges.data.map(faunaNudgeToNudge),
+  group: faunaPost.group._id,
+});
+
+export const postInputToFaunaPostInput = (
+  postInput: IPostInput
+): IFaunaPostInput => ({
+  reading: postInput.reading && { connect: postInput.reading },
+  user: { connect: postInput.user },
+  text: postInput.text,
+  date: dayjs(postInput.date).toISOString(),
+  link: postInput.link,
+  group: { connect: postInput.group },
+  replyTo: postInput.replyTo && {
+    create: { reply: { connect: postInput.replyTo } },
+  },
+});

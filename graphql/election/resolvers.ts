@@ -8,6 +8,7 @@ import {
   IFindElectionByIdResponse,
   IElectionInput,
   IElection,
+  IUpdateElectionResponse,
 } from './models';
 
 interface IFindElectionByIdArgs {
@@ -104,6 +105,41 @@ const createElection = async (
   return { _id };
 };
 
+interface IUpdateElectionArgs {
+  id: string;
+  data: IElectionInput;
+}
+
+const updateElection = async (
+  parent,
+  { id, data }: IUpdateElectionArgs,
+  context
+): Promise<ICreateUpdateDeleteResponse> => {
+  const {
+    data: {
+      updateElection: { _id },
+    },
+  } = await client.mutate<IUpdateElectionResponse>({
+    mutation: gql`
+      mutation Mutation($id: ID!, $data: ElectionInput!) {
+        updateElection(id: $id, data: $data) {
+          _id
+        }
+      }
+    `,
+    variables: {
+      data: {
+        ...data,
+        group: {
+          connect: data.group,
+        },
+      },
+      id,
+    },
+  });
+  return { _id };
+};
+
 interface IDeleteElectionArgs {
   id: string;
 }
@@ -138,6 +174,7 @@ const electionResolvers: IResolvers<any, any> = {
   Mutation: {
     createElection,
     deleteElection,
+    updateElection,
   },
 };
 

@@ -1,5 +1,6 @@
 import { Dayjs } from 'dayjs';
 import { IGroup } from 'graphql/groups';
+import { ID } from 'graphql/models';
 
 // incoming from fauna db
 
@@ -26,12 +27,12 @@ export interface IElection {
   startDateTime?: Dayjs;
   endDateTime?: Dayjs;
   group?: IGroup;
-  nominations?: any;
+  nominations?: any[];
 }
 
 export interface IElectionInput {
   startDateTime: Dayjs;
   endDateTime: Dayjs;
   description: string;
-  group: string;
+  group: ID;
 }

@@ -25,14 +25,19 @@ type Media {
 }
 
 type Post {
-  nudges: [Nudge!]
+  nudges: [Nudge!] @relation
   user: User!
   text: String!
   date: Time!
-  replies: [Post!]
+  replyTo: Post @relation(name: "replyTo")
+  replies: [Reply!] @relation
   reading: Reading
   group: Group!
   link: Link
+}
+
+type Reply {
+  reply: Post @relation
 }
 
 type User {
@@ -50,9 +55,7 @@ type User {
 type Nudge {
   user: User!
   direction: NudgeDirection!
-  post: Post
-  meeting: Meeting
-  group: Group!
+  post: Post!
 }
 
 type MeetingResponse {

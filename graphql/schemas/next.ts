@@ -17,6 +17,8 @@ import {
   meetingResponseTypeDefs,
 } from 'graphql/meetingResponse';
 import { electionResolvers, electionTypeDefs } from 'graphql/election';
+import { postResolvers, postTypeDefs } from 'graphql/posts';
+import { nudgeResolvers, nudgeTypeDefs } from 'graphql/nudge';
 
 const commonTypeDefs: DocumentNode = gql`
   scalar Time
@@ -51,6 +53,8 @@ const typeDefs = mergeTypeDefs([
   meetingTypeDefs,
   meetingResponseTypeDefs,
   electionTypeDefs,
+  postTypeDefs,
+  nudgeTypeDefs,
 ]);
 const resolvers = mergeResolvers([
   groupResolvers,
@@ -63,6 +67,8 @@ const resolvers = mergeResolvers([
   meetingResolvers,
   meetingResponseResolvers,
   electionResolvers,
+  postResolvers,
+  nudgeResolvers,
 ]);
 
 export { typeDefs, resolvers };

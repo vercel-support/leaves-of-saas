@@ -1,5 +1,6 @@
-import { updatePost, createPost, deletePost, findPostById } from './resolvers';
-import { IPostResponse, IPost } from './models';
+import { postResolvers } from './resolvers';
+import { IPost } from './models';
+import { postTypeDefs } from './types';
 
-export { updatePost, createPost, deletePost, findPostById };
-export type { IPost, IPostResponse };
+export { postResolvers, postTypeDefs };
+export type { IPost };

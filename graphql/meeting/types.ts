@@ -8,6 +8,7 @@ const meetingTypeDefs: DocumentNode = gql`
 
   type Mutation {
     createMeeting(data: MeetingInput!): CreateUpdateDelete
+    updateMeeting(id: ID!, data: MeetingInput!): CreateUpdateDelete
     deleteMeeting(id: ID!): CreateUpdateDelete
   }
 

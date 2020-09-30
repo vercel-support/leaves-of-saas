@@ -13,7 +13,7 @@ const linkTypeDefs: DocumentNode = gql`
   }
 
   type Link {
-    _id: String
+    _id: ID!
     description: String
     image: String
     title: String
@@ -24,7 +24,7 @@ const linkTypeDefs: DocumentNode = gql`
 
   input LinkInput {
     "Post ID"
-    post: String!
+    post: ID!
     description: String
     image: String
     title: String

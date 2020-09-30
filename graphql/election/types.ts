@@ -8,6 +8,7 @@ const electionTypeDefs: DocumentNode = gql`
 
   type Mutation {
     createElection(data: ElectionInput!): CreateUpdateDelete
+    updateElection(id: ID!, data: ElectionInput!): CreateUpdateDelete
     deleteElection(id: ID!): CreateUpdateDelete
   }
 

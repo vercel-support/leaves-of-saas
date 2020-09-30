@@ -1,6 +1,4 @@
-import { IMeeting } from 'graphql/meeting';
-import { IPagedResponse } from 'graphql/models';
-import { IUser } from 'graphql/users';
+import { ID, IPagedResponse } from 'graphql/models';
 
 // incoming from fauna db
 export interface IMeetingResponsePagedResponse {
@@ -20,7 +18,12 @@ export interface ICreateMeetingResponseResponse {
 }
 
 export interface IFindMeetingResponseByIdResponse {
-  findMeetingResponseByID: IMeetingResponse;
+  findMeetingResponseByID: {
+    _id: ID;
+    user: { _id: ID };
+    isAttending: boolean;
+    meeting: { _id: ID };
+  };
 }
 
 export interface IDeleteMeetingResponseResponse {
@@ -35,14 +38,14 @@ export interface IMeetingResponseResponse {
 }
 
 export interface IMeetingResponse {
-  _id: string;
-  user: IUser;
-  isAttending: boolean;
-  meeting: IMeeting;
+  _id?: ID;
+  user?: ID;
+  isAttending?: boolean;
+  meeting?: ID;
 }
 
 export interface IMeetingResponseInput {
-  user: string;
+  user: ID;
   isAttending: boolean;
-  meeting: string;
+  meeting: ID;
 }

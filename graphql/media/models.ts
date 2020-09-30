@@ -1,5 +1,4 @@
 import { Dayjs } from 'dayjs';
-import { IPagedResponse } from 'graphql/models';
 
 export enum Partner {
   GOODREADS,

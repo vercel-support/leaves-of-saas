@@ -1,6 +1,7 @@
 import { gql } from '@apollo/client';
 import { IResolvers } from 'apollo-server-micro';
 import client from 'graphql/client';
+import { ICreateUpdateDeleteResponse } from 'graphql/models';
 import {
   ICreateMeetingResponseResponse,
   IDeleteMeetingResponseResponse,
@@ -9,10 +10,6 @@ import {
   IUpdateMeetingResponseResponse,
   IMeetingResponse,
 } from './models';
-
-interface IFindMeetingResponsesByNameArgs {
-  name: string;
-}
 
 interface IFindMeetingResponseByIdArgs {
   id: string;
@@ -23,28 +20,31 @@ const findMeetingResponseById = async (
   { id }: IFindMeetingResponseByIdArgs,
   context
 ): Promise<IMeetingResponse> => {
-  const response = await client.query<IFindMeetingResponseByIdResponse>({
+  const {
+    data: { findMeetingResponseByID: result },
+  } = await client.query<IFindMeetingResponseByIdResponse>({
     query: gql`
       query Query($id: ID!) {
         findMeetingResponseByID(id: $id) {
           _id
           user {
             _id
-            familyName
-            givenName
-            emailAddress
           }
           isAttending
           meeting {
             _id
-            description
           }
         }
       }
     `,
     variables: { id },
   });
-  return response.data.findMeetingResponseByID;
+  return {
+    _id: result._id,
+    isAttending: result.isAttending,
+    user: result.user._id,
+    meeting: result.user._id,
+  };
 };
 
 interface IUpdateMeetingResponseArgs {
@@ -56,17 +56,21 @@ const updateMeetingResponse = async (
   parent,
   { id, data }: IUpdateMeetingResponseArgs,
   context
-): Promise<IMeetingResponse> => {
-  const response = await client.mutate<IUpdateMeetingResponseResponse>({
+): Promise<ICreateUpdateDeleteResponse> => {
+  const {
+    data: { updateMeetingResponse },
+  } = await client.mutate<IUpdateMeetingResponseResponse>({
     mutation: gql`
       mutation Mutation($id: ID!, $data: MeetingResponseInput!) {
-        updateMeetingResponse(id: $id, data: $data)
+        updateMeetingResponse(id: $id, data: $data) {
+          _id
+        }
       }
     `,
     variables: { id, data },
   });
 
-  return response.data.updateMeetingResponse;
+  return updateMeetingResponse as ICreateUpdateDeleteResponse;
 };
 
 interface ICreateMeetingResponseArgs {
@@ -77,7 +81,7 @@ const createMeetingResponse = async (
   parent,
   { data }: ICreateMeetingResponseArgs,
   context
-): Promise<IMeetingResponse> => {
+): Promise<ICreateUpdateDeleteResponse> => {
   const response = await client.mutate<ICreateMeetingResponseResponse>({
     mutation: gql`
       mutation Mutation($data: MeetingResponseInput!) {
@@ -99,7 +103,7 @@ const createMeetingResponse = async (
     },
   });
 
-  return response.data.createMeetingResponse;
+  return response.data.createMeetingResponse as ICreateUpdateDeleteResponse;
 };
 
 interface IDeleteMeetingResponseArgs {

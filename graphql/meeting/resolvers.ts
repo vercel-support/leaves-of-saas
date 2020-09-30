@@ -89,6 +89,45 @@ const createMeeting = async (
   return { _id };
 };
 
+interface IUpdateMeetingArgs {
+  id: string;
+  data: IMeetingInput;
+}
+
+export interface IUpdateMeetingResponse {
+  updateMeeting: IMeeting;
+}
+
+const updateMeeting = async (
+  parent,
+  { id, data }: IUpdateMeetingArgs,
+  context
+): Promise<ICreateUpdateDeleteResponse> => {
+  const {
+    data: {
+      updateMeeting: { _id },
+    },
+  } = await client.mutate<IUpdateMeetingResponse>({
+    mutation: gql`
+      mutation Mutation($id: ID!, $data: MeetingInput!) {
+        updateMeeting(id: $id, data: $data) {
+          _id
+        }
+      }
+    `,
+    variables: {
+      data: {
+        ...data,
+        group: {
+          connect: data.group,
+        },
+      },
+      id,
+    },
+  });
+  return { _id };
+};
+
 interface IDeleteMeetingArgs {
   id: string;
 }
@@ -123,6 +162,7 @@ const meetingResolvers: IResolvers<any, any> = {
   Mutation: {
     createMeeting,
     deleteMeeting,
+    updateMeeting,
   },
 };
 

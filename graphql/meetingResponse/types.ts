@@ -17,9 +17,9 @@ const meetingResponseTypeDefs: DocumentNode = gql`
 
   type MeetingResponse {
     _id: ID!
-    user: User!
+    user: ID!
     isAttending: Boolean
-    meeting: Meeting!
+    meeting: ID!
   }
 
   input MeetingResponseInput {

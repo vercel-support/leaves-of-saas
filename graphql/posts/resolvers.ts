@@ -1,12 +1,16 @@
 import { gql } from '@apollo/client';
+import { IResolvers } from 'apollo-server-micro';
 import client from 'graphql/client';
+import { ICreateUpdateDeleteResponse } from 'graphql/models';
 import {
   ICreatePostResponse,
   IDeletePostResponse,
-  IFindPostByIdResponse,
   IPostInput,
   IUpdatePostResponse,
   IPost,
+  IFindPostByIdResponse,
+  faunaPostToPost,
+  postInputToFaunaPostInput,
 } from './models';
 
 interface IFindPostByIdArgs {
@@ -26,6 +30,7 @@ const findPostById = async (
           text
           date
           link {
+            _id
             url
             image
             description
@@ -33,44 +38,67 @@ const findPostById = async (
             title
             type
           }
+          group {
+            _id
+          }
           replies {
-            text
-            date
-            link {
-              url
-              image
-              description
-              siteName
-              title
-              type
+            data {
+              reply {
+                text
+                date
+                link {
+                  url
+                  image
+                  description
+                  siteName
+                  title
+                  type
+                }
+                nudges {
+                  data {
+                    direction
+                    user {
+                      _id
+                      familyName
+                      givenName
+                    }
+                    _id
+                  }
+                }
+                user {
+                  _id
+                  familyName
+                  givenName
+                  emailAddress
+                }
+              }
             }
-            nudges {
+            after
+            before
+          }
+          nudges {
+            data {
               direction
               user {
                 _id
+                familyName
+                givenName
               }
-            }
-            user {
-              _id
-              familyName
-              givenName
-            }
-          }
-          nudges {
-            direction
-            user {
               _id
             }
           }
           user {
             _id
+            familyName
+            givenName
+            emailAddress
           }
         }
       }
     `,
     variables: { id },
   });
-  return response.data.findPostByID;
+  return faunaPostToPost(response.data.findPostByID);
 };
 
 interface IUpdatePostArgs {
@@ -86,10 +114,12 @@ const updatePost = async (
   const response = await client.mutate<IUpdatePostResponse>({
     mutation: gql`
       mutation Mutation($id: ID!, $data: PostInput!) {
-        updatePost(id: $id, data: $data)
+        updatePost(id: $id, data: $data) {
+          _id
+        }
       }
     `,
-    variables: { id, data },
+    variables: { id, data: postInputToFaunaPostInput(data) },
   });
 
   return response.data.updatePost;
@@ -103,19 +133,19 @@ const createPost = async (
   parent,
   { data }: ICreatePostArgs,
   context
-): Promise<IPost> => {
+): Promise<ICreateUpdateDeleteResponse> => {
   const response = await client.mutate<ICreatePostResponse>({
     mutation: gql`
       mutation Mutation($data: PostInput!) {
-        createGroup(data: $data) {
+        createPost(data: $data) {
           _id
         }
       }
     `,
-    variables: { data },
+    variables: { data: postInputToFaunaPostInput(data) },
   });
 
-  return response.data.createPost;
+  return response.data.createPost as ICreateUpdateDeleteResponse;
 };
 
 interface IDeletePostArgs {
@@ -141,4 +171,15 @@ const deletePost = async (
   return response.data.deletePost;
 };
 
-export { updatePost, createPost, deletePost, findPostById };
+const postResolvers: IResolvers<any, any> = {
+  Query: {
+    findPostById,
+  },
+  Mutation: {
+    deletePost,
+    updatePost,
+    createPost,
+  },
+};
+
+export { postResolvers };

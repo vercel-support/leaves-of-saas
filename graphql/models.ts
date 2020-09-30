@@ -4,6 +4,8 @@ export interface IPagedResponse<T> {
   before: string | null;
 }
 
+export type ID = string;
+
 export interface ICreateUpdateDeleteResponse {
-  _id: String;
+  _id: ID;
 }
